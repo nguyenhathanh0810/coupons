@@ -1,0 +1,19 @@
+1. Codebase setup
+  1.1. NPM
+  1.2. MongoDB
+  1.3. ExpressJS
+  1.4. Test libraries
+2. Modeling
+  2.1. Function to connect MongoDB
+  2.2. Create schemas & models
+3. API implementation
+  3.1. Routings
+  3.2. Logic
+  3.3. Securities
+  3.4. Write UTs
+4. Testing & refactoring
+  4.1. Consume API singly
+  4.2. Test with flows
+5. Mass API consumptions (simulation)
+6. Swagger (optional)
+7. Simple frontend (optional)
