@@ -1,0 +1,9 @@
+# workspace
+.vscode
+.notes
+
+# libraries
+node_modules
+
+# builds
+dist
