@@ -1,17 +1,29 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import APIRouter from "./api/router";
+import bodyParser from "body-parser";
+import cors from "cors";
+import compression from "compression";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
 const app: Express = express();
-const port = process.env.PORT || 3000;
-const mongodbURL = `${process.env.MONGODB_URL}`;
+app.use(cors({
+  credentials: true
+}));
+app.use(compression());
+app.use(cookieParser());
+app.use(bodyParser.json());
 
 app.get("/", (_: Request, res: Response) => {
   res.send("Coupons app with Express & Typescript 🎫");
 });
+APIRouter(app);
 
+const port = process.env.PORT || 3000;
+const mongodbURL = `${process.env.MONGODB_URL}`;
 async function connectDB(callback: Function) {
   mongoose.connect(mongodbURL).then(
     () => {
