@@ -1,8 +1,7 @@
 import { Document, Model, ObjectId, Query, Schema, model } from "mongoose";
+import { dateBits } from "./../helpers/common";
 import Coupon from "./Coupon";
 import User from "./User";
-
-const MAX_CLAIMS_PER_DAY = 3;
 
 interface IClaim {
   coupon: ObjectId;
@@ -10,8 +9,12 @@ interface IClaim {
 }
 
 interface ClaimQueryHelpers {
-  claimed(coupon: Schema.Types.ObjectId): Query<any, Document<IClaim>> & ClaimQueryHelpers;
-  claimedBy(user: Schema.Types.ObjectId): Query<any, Document<IClaim>> & ClaimQueryHelpers;
+  claimed(
+    coupon: Schema.Types.ObjectId
+  ): Query<any, Document<IClaim>> & ClaimQueryHelpers;
+  claimedBy(
+    user: Schema.Types.ObjectId
+  ): Query<any, Document<IClaim>> & ClaimQueryHelpers;
 }
 
 const claimSchema = new Schema<IClaim>(
@@ -34,36 +37,35 @@ const claimSchema = new Schema<IClaim>(
         return this.where("coupon").equals(coupon);
       },
       claimedBy(user: Schema.Types.ObjectId) {
-        const now = Date.now(),
-          sod = new Date(now),
-          eod = new Date(now);
-        sod.setHours(0) &&
-          sod.setMinutes(0) &&
-          sod.setSeconds(0) &&
-          sod.setMilliseconds(0);
-        eod.setHours(23) &&
-          eod.setMinutes(59) &&
-          eod.setSeconds(59) &&
-          eod.setMilliseconds(999);
+        const now = Date.now();
+        const dbs = dateBits(now);
         return this.where("user").equals(user).where("createdAt", {
-          $gte: sod,
-          $lte: eod,
+          $gte: dbs.beginning(),
+          $lte: dbs.ending(),
         });
       },
     },
   }
 );
 
-claimSchema.pre("save", async function() {
+claimSchema.pre("save", async function () {
   const claimFound = await ClaimModel.find().claimed(this.coupon);
   if (!!claimFound) {
     throw Error("[coupon] Coupon has been claimed already");
   }
   const claims = await ClaimModel.find().claimedBy(this.user).exec();
-  if (claims >= MAX_CLAIMS_PER_DAY) {
+  const claimLimit = (
+    await import("../constant/appConfig.js")
+      .then((mod) => mod.default)
+      .then((defaultMod) => defaultMod.appConfig())
+  ).dailyMaxClaimsPerUser;
+  if (claims >= claimLimit) {
     throw Error("[user:claims:exceeds] User has reached max daily claims");
   }
-})
+});
 
-const ClaimModel = model<IClaim, Model<IClaim, ClaimQueryHelpers>>("Claim", claimSchema);
+const ClaimModel = model<IClaim, Model<IClaim, ClaimQueryHelpers>>(
+  "Claim",
+  claimSchema
+);
 export default ClaimModel;
