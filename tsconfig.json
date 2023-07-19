@@ -12,6 +12,7 @@
 
 		"strict": true,
 		"alwaysStrict": true,
+		"allowJs": true,
 		"strictFunctionTypes": true,
 		"strictNullChecks": true,
 		"strictPropertyInitialization": true,

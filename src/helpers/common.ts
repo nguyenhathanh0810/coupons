@@ -1,9 +1,11 @@
-import crypto from "crypto";
-
 export function randomString(length?: number) {
-  let arr = new Uint8Array((length || 40) / 2);
-  crypto.getRandomValues(arr);
-  return Array.from(arr, (dec) => dec.toString(16).padStart(2, "0")).join('');
+  let len = length ?? 1;
+  if (len < 1) {
+    len = 1;
+  }
+  return Math.random()
+    .toString(36)
+    .slice(2, 2 + len);
 }
 
 export function toLocaleDateTime(d: Date, tz: string): string {
@@ -18,8 +20,23 @@ export function toLocaleDateTime(d: Date, tz: string): string {
   return localeD;
 }
 
+export const dateBits = function (date: Date | number | string) {
+  const A_DAY_MS = 24 * 60 * 60 * 1000;
+  const beginning = () => {
+    let result = new Date(date);
+    if (!(result instanceof Date && !isNaN(result.getTime()))) {
+      result = new Date();
+    }
+    return new Date(result.getTime() - (result.getTime() % A_DAY_MS));
+  };
+  const ending = () => {
+    return new Date(beginning().getTime() + A_DAY_MS - 1);
+  };
+  return { beginning, ending };
+};
+
 const localeOptions = (tz?: string): Intl.DateTimeFormatOptions => ({
   dateStyle: "long",
   timeStyle: "long",
-  timeZone: tz ?? "UTC"
-})
+  timeZone: tz ?? "UTC",
+});

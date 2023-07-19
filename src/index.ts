@@ -1,18 +1,20 @@
-import express, { Express, Request, Response } from "express";
-import dotenv from "dotenv";
-import mongoose from "mongoose";
-import APIRouter from "./api/router";
 import bodyParser from "body-parser";
-import cors from "cors";
 import compression from "compression";
 import cookieParser from "cookie-parser";
+import cors from "cors";
+import dotenv from "dotenv";
+import express, { Express, Request, Response } from "express";
+import mongoose from "mongoose";
+import APIRouter from "./api/router";
 
 dotenv.config();
 
 const app: Express = express();
-app.use(cors({
-  credentials: true
-}));
+app.use(
+  cors({
+    credentials: true,
+  })
+);
 app.use(compression());
 app.use(cookieParser());
 app.use(bodyParser.json());
@@ -35,7 +37,7 @@ async function connectDB(callback: Function) {
     (error: Error) => {
       throw error;
     }
-  )
+  );
 }
 connectDB(() => {
   app.listen(port, () => {
