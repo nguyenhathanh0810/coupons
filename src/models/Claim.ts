@@ -39,6 +39,8 @@ const claimSchema = new Schema<IClaim>(
       claimedBy(user: Schema.Types.ObjectId) {
         const now = Date.now();
         const dbs = dateBits(now);
+        console.log("Beginning: ", dbs.beginning());
+        console.log("Ending: ", dbs.ending());
         return this.where("user").equals(user).where("createdAt", {
           $gte: dbs.beginning(),
           $lte: dbs.ending(),
@@ -49,23 +51,29 @@ const claimSchema = new Schema<IClaim>(
 );
 
 claimSchema.pre("save", async function () {
-  const claimFound = await ClaimModel.find().claimed(this.coupon);
-  if (!!claimFound) {
-    throw Error("[coupon] Coupon has been claimed already");
+  const claimFound = await Claim.findOne().claimed(this.coupon).exec();
+  if (claimFound) {
+    throw Error("Coupon has been claimed already");
   }
-  const claims = await ClaimModel.find().claimedBy(this.user).exec();
+  const claims = await Claim.find().claimedBy(this.user).count().exec();
   const claimLimit = (
-    await import("../constant/appConfig.js")
+    await import("../constants/appConfig.js")
       .then((mod) => mod.default)
       .then((defaultMod) => defaultMod.appConfig())
   ).dailyMaxClaimsPerUser;
   if (claims >= claimLimit) {
-    throw Error("[user:claims:exceeds] User has reached max daily claims");
+    const serverTime = new Date().toLocaleString("en-GB", {
+      dateStyle: "long",
+      timeStyle: "long",
+    });
+    throw Error(
+      `User has reached max daily claims. Server time <${serverTime}>`
+    );
   }
 });
 
-const ClaimModel = model<IClaim, Model<IClaim, ClaimQueryHelpers>>(
+const Claim = model<IClaim, Model<IClaim, ClaimQueryHelpers>>(
   "Claim",
   claimSchema
 );
-export default ClaimModel;
+export default Claim;

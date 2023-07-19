@@ -14,7 +14,7 @@ export default {
   ) => {
     console.log("👀", { token, size, activeTime, timezone });
     const appConfig = (
-      await import("../../constant/appConfig.js").then((mod) => mod.default)
+      await import("../../constants/appConfig.js").then((mod) => mod.default)
     ).appConfig();
     if (appConfig.adminToken !== `admin:${token}`) {
       return {
