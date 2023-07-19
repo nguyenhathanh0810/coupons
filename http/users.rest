@@ -1,0 +1,13 @@
+POST http://localhost:3001/api/users HTTP/1.1
+content-type: application/json
+
+{
+  "fullname": "Thanh Nguyen",
+  "email": "nguyen@gmail.com"
+}
+
+###
+GET http://localhost:3001/api/users/nguyen@gmail.com HTTP/1.1
+
+###
+GET http://localhost:3001/api/users HTTP/1.1

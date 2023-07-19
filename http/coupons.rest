@@ -1,0 +1,13 @@
+POST http://localhost:3001/api/coupons/generate HTTP/1.1
+content-type: application/json
+
+{
+  "adminToken": "261b427c-2eb7-4286-b22b-f7ce2f42c508",
+  "size": 100
+}
+
+###
+GET http://localhost:3001/api/coupons/?date=&page=1&window=20 HTTP/1.1
+
+###
+GET http://localhost:3001/api/coupons/abddefgh/status HTTP/1.1
