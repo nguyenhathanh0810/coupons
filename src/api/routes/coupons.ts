@@ -2,15 +2,20 @@ import { Request, Response, Router } from "express";
 import { dateBits } from "../../helpers/common";
 import couponController from "../controllers/couponController";
 
+interface RequestQuery {
+  date: string;
+  page: string;
+  window: string;
+}
 const couponRouter = Router();
 
-couponRouter.route("/").get(async function (req: Request, res: Response) {
-  const { date, page, window } = req.query;
-  console.log(date, page, window);
-  // Todo: handle fetching codes regarding queries
-
-  res.status(200).json({ date, page, window }).end();
-});
+couponRouter
+  .route("/")
+  .get(async function (req: Request<{}, {}, {}, RequestQuery>, res: Response) {
+    let { date, page, window } = req.query;
+    const result = await couponController.list(new Date(date), page, window);
+    res.status(200).json(result).end();
+  });
 couponRouter
   .route("/generate")
   .post(async function (req: Request, res: Response) {
@@ -24,6 +29,11 @@ couponRouter
       ).maxCreationsInARow;
     } else {
       size = parseInt(size);
+    }
+    if (activeTime === undefined) {
+      activeTime = new Date();
+    } else {
+      activeTime = new Date(activeTime);
     }
     const result: { [key: string]: any } = await couponController.generate(
       adminToken,
@@ -44,10 +54,8 @@ couponRouter
   .route("/:coupon/status")
   .get(async function (req: Request, res: Response) {
     const { coupon } = req.params;
-    console.log(coupon);
-    // Todo: handle revealing coupon statuss
-
-    res.status(200).send(coupon).end();
+    const result = await couponController.status(coupon);
+    res.status(200).json(result).end();
   });
 
 export default couponRouter;

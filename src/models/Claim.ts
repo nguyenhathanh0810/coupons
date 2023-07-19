@@ -1,4 +1,12 @@
-import { Document, Model, ObjectId, Query, Schema, model } from "mongoose";
+import {
+  Document,
+  Model,
+  ObjectId,
+  Query,
+  Schema,
+  Types,
+  model,
+} from "mongoose";
 import { dateBits } from "./../helpers/common";
 import Coupon from "./Coupon";
 import User from "./User";
@@ -10,7 +18,7 @@ interface IClaim {
 
 interface ClaimQueryHelpers {
   claimed(
-    coupon: Schema.Types.ObjectId
+    coupon: Schema.Types.ObjectId | Types.ObjectId
   ): Query<any, Document<IClaim>> & ClaimQueryHelpers;
   claimedBy(
     user: Schema.Types.ObjectId
@@ -33,7 +41,7 @@ const claimSchema = new Schema<IClaim>(
   {
     timestamps: true,
     query: {
-      claimed(coupon: Schema.Types.ObjectId) {
+      claimed(coupon: Schema.Types.ObjectId | Types.ObjectId) {
         return this.where("coupon").equals(coupon);
       },
       claimedBy(user: Schema.Types.ObjectId) {

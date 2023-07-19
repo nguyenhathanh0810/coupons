@@ -8,11 +8,6 @@ export function appConfig() {
   if (isNaN(maxCreationsInARow)) {
     maxCreationsInARow = 10_000;
   }
-  console.log({
-    adminToken,
-    dailyMaxClaimsPerUser,
-    maxCreationsInARow,
-  });
   return {
     adminToken,
     dailyMaxClaimsPerUser,
