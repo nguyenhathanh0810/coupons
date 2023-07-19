@@ -1,6 +1,6 @@
 import mongoose, { Schema, model } from "mongoose";
 
-const DURATION_IN_DAYS = 1;
+const DURATION_IN_DAYS = 2;
 const ValidatorError = mongoose.Error.ValidatorError;
 
 interface ICoupon {
