@@ -18,7 +18,7 @@ couponRouter
     if (size === undefined) {
       // generate at maximum when size is omitted
       size = (
-        await import("../../constant/appConfig.js")
+        await import("../../constants/appConfig.js")
           .then((mod) => mod.default)
           .then((defaultMod) => defaultMod.appConfig())
       ).maxCreationsInARow;

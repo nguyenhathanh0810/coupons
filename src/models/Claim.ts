@@ -39,8 +39,6 @@ const claimSchema = new Schema<IClaim>(
       claimedBy(user: Schema.Types.ObjectId) {
         const now = Date.now();
         const dbs = dateBits(now);
-        console.log("Beginning: ", dbs.beginning());
-        console.log("Ending: ", dbs.ending());
         return this.where("user").equals(user).where("createdAt", {
           $gte: dbs.beginning(),
           $lte: dbs.ending(),
